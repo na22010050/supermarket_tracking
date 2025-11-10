@@ -1,0 +1,19 @@
+# =============== Data (Tuyệt đối không up) ===============
+# Bo qua thu muc data goc
+merged_dataset/
+
+# Bo qua file zip (neu ban de chung)
+*.zip
+
+# =============== Kết quả (Không up) ===============
+# Thu muc 'runs' do train.py va predict.py tao ra
+runs/
+
+# =============== Mô hình đã tải về (Không up) ===============
+# File yolov8 goc
+yolov8n.pt
+
+# =============== File tạm của Python ===============
+__pycache__/
+*.pyc
+*.cache
