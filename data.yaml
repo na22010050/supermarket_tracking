@@ -1,0 +1,25 @@
+
+path: D:/supermarket/merged_dataset/merged_dataset
+train: train/images
+val: valid/images
+test: test/images
+nc: 17
+names:
+  - banana
+  - tomato
+  - egg
+  - kitkat
+  - lays
+  - haohao
+  - indomie_goreng
+  - coca
+  - th_true_milk
+  - chocolate_sachet
+  - coffee_sachet
+  - juice_sachet
+  - close_up
+  - colgate
+  - pepsodent
+  - sensodyne
+  - omo_chai
+

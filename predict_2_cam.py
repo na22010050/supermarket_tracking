@@ -19,7 +19,7 @@ MODEL_PATH_PERSON = 'yolov8m.pt' # Mô hình người
 # 3️⃣ Thư mục lưu video đầu ra
 OUTPUT_PROJECT_PATH = r'D:\supermarket\runs\predict_2_cam_video'
 
-# 4️⃣ Bảng giá (Giữ nguyên)
+# 4️⃣ Bảng giá cho 17 class sản phẩm (Giữ nguyên)
 PRICE_LIST = {
     'banana': 3000,
     'tomato': 3000,
@@ -112,7 +112,7 @@ while True:
         break
 
     # --------------------------------------------------------
-    # 1️⃣ XỬ LÝ VIDEO ĐẾM KHÁCH 
+    # 1️⃣ XỬ LÝ VIDEO ĐẾM KHÁCH (CHỈ ĐẾM PHẢI -> TRÁI)
     # --------------------------------------------------------
     if success_p:
         annotated_frame_p = frame_p.copy()
@@ -142,19 +142,17 @@ while True:
                     x_prev = history_x[0]
                     x_curr = history_x[1]
                     
-                    # --- (ĐÃ SỬA) KIỂM TRA CẢ 2 HƯỚNG ---
+                    # --- (ĐÃ SỬA) CHỈ KIỂM TRA HƯỚNG TỪ PHẢI SANG TRÁI ---
                     
-                    # 1. KIỂM TRA ĐI TỪ TRÁI SANG PHẢI (Left -> Right)
-                    if x_prev < ROI_LINE_X and x_curr >= ROI_LINE_X:
-                        TOTAL_CUSTOMERS += 1
-                        counted_person_ids.add(track_id)
-                        print(f"[SỐ KHÁCH] Phat hien khach moi (ID: {track_id}) (Trái -> Phải). Tổng: {TOTAL_CUSTOMERS}")
-
-                    # 2. KIỂM TRA ĐI TỪ PHẢI SANG TRÁI (Right -> Left)
-                    elif x_prev >= ROI_LINE_X and x_curr < ROI_LINE_X:
+                    # 1. KIỂM TRA ĐI TỪ PHẢI SANG TRÁI (Right -> Left)
+                    if x_prev >= ROI_LINE_X and x_curr < ROI_LINE_X:
                         TOTAL_CUSTOMERS += 1
                         counted_person_ids.add(track_id)
                         print(f"[SỐ KHÁCH] Phat hien khach moi (ID: {track_id}) (Phải -> Trái). Tổng: {TOTAL_CUSTOMERS}")
+                    
+                    # 2. KIỂM TRA ĐI TỪ TRÁI SANG PHẢI (Left -> Right) -> BỎ QUA
+                    # elif x_prev < ROI_LINE_X and x_curr >= ROI_LINE_X:
+                    #     pass # Không đếm chiều này
 
             annotated_frame_p = person_results[0].plot(img=annotated_frame_p)
 
@@ -183,7 +181,7 @@ while True:
         
         grocery_results = grocery_model.track(
             frame_pr, persist=True, verbose=False, 
-            conf=0.3, save=False, imgsz=640
+            conf=0.4, save=False, imgsz=640
         )
 
         if grocery_results[0].boxes.id is not None:

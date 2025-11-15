@@ -1,12 +1,7 @@
 import os
 import shutil
 import yaml
-
-# ======================================================================
-# PHẦN CẤU HÌNH - (ĐÃ CẬP NHẬT)
-# ======================================================================
-
-# 1. Định nghĩa TẤT CẢ 17 class của bạn
+# 1. Định nghĩa TẤT CẢ 17 class 
 MASTER_CLASSES_LIST = [
     # Rau củ
     'banana',
@@ -46,7 +41,7 @@ SOURCE_DATASETS = [
     'D:/supermarket/vegetable/banana',
     'D:/supermarket/vegetable/tomato',
     
-    # --- ĐÃ THÊM DATASET MỚI CỦA BẠN ---
+    # --- ĐÃ THÊM DATASET MỚI  ---
     'D:/supermarket/moree'
     # --------------------------------------
 ]
