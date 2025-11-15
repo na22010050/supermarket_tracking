@@ -15,7 +15,7 @@
 
 Do dataset (6000+ ảnh) quá lớn, bạn cần tải file `merged_dataset.zip` từ Google Drive và giải nén vào thư mục gốc của dự án.
 
-* **Link tải Dataset:** [https://drive.google.com/drive/folders/1_jCpYXYh-LrLSncdXW8VPx-likKgKESv?usp=drive_link]
+* **Link tải Dataset:** [https://drive.google.com/file/d/1RV_ASxA-xn-Ai906tjwpDj6qs_yN9uhM/view?usp=sharing]
 
 ### 2. Tải Mô hình (Model)
 

@@ -3,10 +3,10 @@ import shutil
 import yaml
 
 # ======================================================================
-# PHẦN CẤU HÌNH - (DÁN TOÀN BỘ PHẦN NÀY)
+# PHẦN CẤU HÌNH - (ĐÃ CẬP NHẬT)
 # ======================================================================
 
-# 1. Định nghĩa TẤT CẢ các class của bạn (Đã dọn dẹp)
+# 1. Định nghĩa TẤT CẢ 17 class của bạn
 MASTER_CLASSES_LIST = [
     # Rau củ
     'banana',
@@ -31,7 +31,7 @@ MASTER_CLASSES_LIST = [
     'omo_chai',
 ]
 
-# 2. Liệt kê đường dẫn đến CÁC DATASET CON (Đã xóa 'rubik')
+# 2. Liệt kê đường dẫn đến TẤT CẢ các dataset con
 SOURCE_DATASETS = [
     'D:/supermarket/drinks/coca',
     'D:/supermarket/drinks/TH_TRUE_MILK',
@@ -45,13 +45,17 @@ SOURCE_DATASETS = [
     'D:/supermarket/Snacks/lays',
     'D:/supermarket/vegetable/banana',
     'D:/supermarket/vegetable/tomato',
+    
+    # --- ĐÃ THÊM DATASET MỚI CỦA BẠN ---
+    'D:/supermarket/moree'
+    # --------------------------------------
 ]
 
 # 3. Định nghĩa thư mục ĐẦU RA
 OUTPUT_DIR = 'D:/supermarket/merged_dataset'
 
 # ======================================================================
-# PHẦN CODE XỬ LÝ (DÁN TOÀN BỘ PHẦN NÀY - KHÔNG CẦN SỬA)
+# PHẦN CODE XỬ LÝ (Không cần sửa)
 # ======================================================================
 
 def load_yaml(path):
@@ -66,6 +70,12 @@ def load_yaml(path):
 def create_output_dirs(base_dir):
     """Tạo các thư mục đầu ra (train/valid/test)."""
     print(f"Đang tạo cấu trúc thư mục tại: {base_dir}")
+    # Xóa thư mục cũ nếu tồn tại để làm lại từ đầu
+    if os.path.exists(base_dir):
+        print("Phat hien merged_dataset cu. Dang xoa...")
+        shutil.rmtree(base_dir)
+        print("Da xoa.")
+        
     for split in ['train', 'valid', 'test']:
         os.makedirs(os.path.join(base_dir, split, 'images'), exist_ok=True)
         os.makedirs(os.path.join(base_dir, split, 'labels'), exist_ok=True)
@@ -78,12 +88,10 @@ def get_image_path(label_dir, img_dir, label_file_name):
         if os.path.exists(img_path):
             return img_path, img_name_base + ext
     
-    # Xử lý trường hợp đặc biệt: file ảnh có thể nằm trong thư mục con
-    # ví dụ: train/images/folder1/img1.jpg
     for root, _, files in os.walk(img_dir):
         for file in files:
             if os.path.splitext(file)[0] == img_name_base:
-                return os.path.join(root, file), file # Trả về đường dẫn tuyệt đối và tên file
+                return os.path.join(root, file), file
 
     return None, None
 
@@ -91,7 +99,6 @@ def process_dataset(dataset_path, master_classes_map):
     """Xử lý, "dịch" ID và gộp một dataset con."""
     print(f"\n--- Đang xử lý: {dataset_path} ---")
     
-    # 1. Đọc data.yaml của dataset con
     yaml_path = os.path.join(dataset_path, 'data.yaml')
     data_config = load_yaml(yaml_path)
     
@@ -104,7 +111,7 @@ def process_dataset(dataset_path, master_classes_map):
         print("LỖI: File data.yaml không có mục 'names'. Bỏ qua dataset này.")
         return
 
-    # 2. Tạo bản đồ "dịch" ID
+    # Tạo bản đồ "dịch" ID
     remap = {}
     for local_id, class_name in enumerate(local_classes):
         if class_name in master_classes_map:
@@ -118,7 +125,7 @@ def process_dataset(dataset_path, master_classes_map):
 
     print(f"  Bản đồ dịch ID: {remap}")
 
-    # 3. Xử lý các split (train/valid/test)
+    # Xử lý các split (train/valid/test)
     for split in ['train', 'valid', 'test']:
         if split not in data_config:
             print(f"  Không tìm thấy split '{split}' trong data.yaml. Bỏ qua.")
@@ -126,51 +133,42 @@ def process_dataset(dataset_path, master_classes_map):
             
         print(f"  Đang xử lý split: {split}...")
         
-        # Lấy đường dẫn thư mục images/labels từ file yaml con
         img_dir_rel = data_config[split].replace('../', '').replace('./', '')
         img_dir_abs = os.path.join(dataset_path, img_dir_rel)
         
         label_dir_rel = img_dir_rel.replace('images', 'labels')
         label_dir_abs = os.path.join(dataset_path, label_dir_rel)
 
-        # Xử lý trường hợp đường dẫn không chuẩn
         if not os.path.isdir(img_dir_abs):
-             img_dir_abs = os.path.join(dataset_path, split, 'images') # Thử đường dẫn chuẩn
+             img_dir_abs = os.path.join(dataset_path, split, 'images')
         if not os.path.isdir(label_dir_abs):
-             label_dir_abs = os.path.join(dataset_path, split, 'labels') # Thử đường dẫn chuẩn
+             label_dir_abs = os.path.join(dataset_path, split, 'labels')
 
         if not os.path.isdir(img_dir_abs) or not os.path.isdir(label_dir_abs):
             print(f"  CẢNH BÁO: Không tìm thấy thư mục images/labels cho split '{split}'. Bỏ qua.")
             print(f"    (Đã thử tìm ở: {img_dir_abs} và {label_dir_abs})")
             continue
 
-        # Đếm số file
         file_count = 0
 
-        # Lặp qua tất cả file labels
         for root, _, files in os.walk(label_dir_abs):
             for label_file in files:
                 if not label_file.endswith('.txt'):
                     continue
                 
                 old_label_path = os.path.join(root, label_file)
-                
-                # Tìm file ảnh tương ứng
                 old_img_path, img_file_name = get_image_path(root, img_dir_abs, label_file)
                 
                 if not old_img_path or not img_file_name:
                     print(f"    CẢNH BÁO: Không tìm thấy ảnh cho label '{label_file}'. Bỏ qua file.")
                     continue
 
-                # Tạo đường dẫn file mới
-                # Thêm tên dataset con vào tên file để tránh trùng lặp
                 dataset_name_prefix = os.path.basename(dataset_path)
                 new_file_name_base = f"{dataset_name_prefix}_{os.path.splitext(img_file_name)[0]}"
                 
                 new_label_path = os.path.join(OUTPUT_DIR, split, 'labels', f"{new_file_name_base}.txt")
                 new_img_path = os.path.join(OUTPUT_DIR, split, 'images', f"{new_file_name_base}{os.path.splitext(img_file_name)[1]}")
 
-                # 4. Đọc, "Dịch" ID, và ghi file label mới
                 try:
                     with open(old_label_path, 'r') as f_in, open(new_label_path, 'w') as f_out:
                         for line in f_in:
@@ -189,7 +187,6 @@ def process_dataset(dataset_path, master_classes_map):
                                 new_line = f"{master_id} {' '.join(parts[1:])}\n"
                                 f_out.write(new_line)
                     
-                    # 5. Copy file ảnh
                     shutil.copyfile(old_img_path, new_img_path)
                     file_count += 1
 
@@ -204,17 +201,13 @@ def process_dataset(dataset_path, master_classes_map):
 def main():
     print("Bắt đầu quá trình gộp dataset...")
     
-    # Tạo bản đồ từ tên class sang ID tổng
     master_classes_map = {name: i for i, name in enumerate(MASTER_CLASSES_LIST)}
     
-    # Tạo các thư mục đầu ra
     create_output_dirs(OUTPUT_DIR)
     
-    # Xử lý từng dataset con
     for dataset_path in SOURCE_DATASETS:
         process_dataset(dataset_path, master_classes_map)
         
-    # 6. Tạo file data.yaml TỔNG
     master_yaml_path = os.path.join(OUTPUT_DIR, 'data.yaml')
     master_yaml_content = {
         'path': os.path.abspath(OUTPUT_DIR),
