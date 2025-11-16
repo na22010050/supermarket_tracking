@@ -19,7 +19,7 @@ MODEL_PATH_PERSON = 'yolov8m.pt' # Mô hình người
 # 3️⃣ Thư mục lưu video đầu ra
 OUTPUT_PROJECT_PATH = r'D:\supermarket\runs\predict_2_cam_video'
 
-# 4️⃣ Bảng giá cho 17 class sản phẩm (Giữ nguyên)
+# 4️⃣ Bảng giá cho 17 class sản phẩm 
 PRICE_LIST = {
     'banana': 3000,
     'tomato': 3000,
@@ -142,7 +142,7 @@ while True:
                     x_prev = history_x[0]
                     x_curr = history_x[1]
                     
-                    # --- (ĐÃ SỬA) CHỈ KIỂM TRA HƯỚNG TỪ PHẢI SANG TRÁI ---
+                    # ---  CHỈ KIỂM TRA HƯỚNG TỪ PHẢI SANG TRÁI ---
                     
                     # 1. KIỂM TRA ĐI TỪ PHẢI SANG TRÁI (Right -> Left)
                     if x_prev >= ROI_LINE_X and x_curr < ROI_LINE_X:
@@ -224,7 +224,7 @@ while True:
         break
 
 # ============================================================
-# 🏁 KẾT THÚC
+#  KẾT THÚC
 # ============================================================
 
 cap_person.release()

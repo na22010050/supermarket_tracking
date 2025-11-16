@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 10
+names: ['banana', 'coca', 'egg', 'haohao', 'indomie_goreng', 'kitkat', 'lays', 'omo_chai', 'th_true_milk', 'tomato']
+
+roboflow:
+  workspace: market-qlnie
+  project: supermarket-ae9kl
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/market-qlnie/supermarket-ae9kl/dataset/2
